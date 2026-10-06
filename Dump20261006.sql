@@ -1,10 +1,10 @@
-CREATE DATABASE  IF NOT EXISTS `computer_club` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE  IF NOT EXISTS `computer_club` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `computer_club`;
--- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.11, for Linux (x86_64)
 --
--- Host: localhost    Database: computer_club
+-- Host: 127.0.0.1    Database: computer_club
 -- ------------------------------------------------------
--- Server version	8.0.45
+-- Server version	26.7.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,6 +16,14 @@ USE `computer_club`;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
+SET @@SESSION.SQL_LOG_BIN= 0;
+
+--
+-- GTID state at the beginning of the backup 
+--
+
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'c110e3f4-b384-11f1-99aa-02914c4bdb7d:1-109';
 
 --
 -- Table structure for table `bookings`
@@ -33,7 +41,7 @@ CREATE TABLE `bookings` (
   `start_time` datetime NOT NULL,
   `end_time` datetime NOT NULL,
   `total_price` decimal(10,2) NOT NULL,
-  `status` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `status` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
   PRIMARY KEY (`booking_id`),
   KEY `frg_booking_one_idx` (`user_id`),
   KEY `frg_booking_two_idx` (`zone_id`),
@@ -63,8 +71,8 @@ DROP TABLE IF EXISTS `categories`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categories` (
   `category_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `name_category` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `describe_category` varchar(255) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `name_category` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `describe_category` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
   PRIMARY KEY (`category_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_ru_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -116,12 +124,14 @@ DROP TABLE IF EXISTS `clubs`;
 CREATE TABLE `clubs` (
   `club_id` int unsigned NOT NULL AUTO_INCREMENT,
   `manager_id` int unsigned NOT NULL,
-  `name_club` varchar(65) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `describe_club` varchar(255) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `address_club` varchar(100) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `phone_club` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `email_club` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `main_photo_club` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `name_club` varchar(65) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `describe_club` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `phone_club` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `email_club` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `main_photo_club` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `city` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci DEFAULT NULL,
+  `street` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci DEFAULT NULL,
+  `home` int DEFAULT NULL,
   PRIMARY KEY (`club_id`),
   UNIQUE KEY `name_club_UNIQUE` (`name_club`),
   KEY `frg_club_one_idx` (`manager_id`),
@@ -135,7 +145,7 @@ CREATE TABLE `clubs` (
 
 LOCK TABLES `clubs` WRITE;
 /*!40000 ALTER TABLE `clubs` DISABLE KEYS */;
-INSERT INTO `clubs` VALUES (1,1,'CyberSphere','Лучший клуб в центре','ул. Ленина, 10','777-888','cyber@club.ru','photo1.jpg');
+INSERT INTO `clubs` VALUES (1,1,'CyberSphere','Лучший клуб в центре','777-888','cyber@club.ru','photo1.jpg','Уфа','ул. Ленина',10);
 /*!40000 ALTER TABLE `clubs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -151,9 +161,9 @@ CREATE TABLE `reviews` (
   `user_id` int unsigned DEFAULT NULL,
   `club_id` int unsigned NOT NULL,
   `rating` int NOT NULL,
-  `comment` varchar(255) COLLATE utf8mb4_ru_0900_ai_ci DEFAULT NULL,
+  `comment` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
   PRIMARY KEY (`review_id`),
   KEY `frg_review_one_idx` (`user_id`),
   KEY `frg_review_two_idx` (`club_id`),
@@ -182,7 +192,7 @@ DROP TABLE IF EXISTS `tariffs`;
 CREATE TABLE `tariffs` (
   `tariff_id` int unsigned NOT NULL AUTO_INCREMENT,
   `zone_id` int unsigned NOT NULL,
-  `name_tariff` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `name_tariff` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
   `price_per_hour` decimal(10,2) NOT NULL,
   `start_time` datetime NOT NULL,
   `end_time` datetime NOT NULL,
@@ -211,12 +221,12 @@ DROP TABLE IF EXISTS `users`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `user_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `login` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `password` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `email_user` varchar(100) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `phone_user` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `full_name` varchar(100) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `role_user` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `login` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `password` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `email_user` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `phone_user` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `full_name` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `role_user` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
   `registr_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_active` tinyint NOT NULL,
   PRIMARY KEY (`user_id`),
@@ -244,8 +254,8 @@ DROP TABLE IF EXISTS `zones`;
 CREATE TABLE `zones` (
   `zone_id` int unsigned NOT NULL AUTO_INCREMENT,
   `club_id` int unsigned NOT NULL,
-  `name_zone` varchar(45) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
-  `describe_zone` varchar(100) COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `name_zone` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
+  `describe_zone` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_ru_0900_ai_ci NOT NULL,
   `capacity` int NOT NULL,
   PRIMARY KEY (`zone_id`),
   KEY `frg_zone_one_idx` (`club_id`),
@@ -262,14 +272,7 @@ LOCK TABLES `zones` WRITE;
 INSERT INTO `zones` VALUES (1,1,'Bootcamp A','Для командных тренировок',5),(2,1,'Main Hall','Большой зал',30);
 /*!40000 ALTER TABLE `zones` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'computer_club'
---
-
---
--- Dumping routines for database 'computer_club'
---
+SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -280,4 +283,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-30  2:07:16
+-- Dump completed on 2026-10-06 12:37:47
